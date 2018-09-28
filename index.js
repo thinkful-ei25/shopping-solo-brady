@@ -62,7 +62,7 @@ function renderShoppingList() {
 }
 
 function addItemShoppingList(newItem) {
-  STORE.push({name: newItem, checked: false});
+    STORE.push({name: newItem, checked: false});
 
 
 }
@@ -85,12 +85,12 @@ function handleNewItems() {
 }
 
 function getItemIndexFromElement(item) {
-  const itemIndexString = $(item).closest('.js-item-index-element').attr('data-item-index');
-  return parseInt(itemIndexString, 10);
+    const itemIndexString = $(item).closest('.js-item-index-element').attr('data-item-index');
+    return parseInt(itemIndexString, 10);
 }
 
 function crossCheckedItems(itemIndex){
-STORE[itemIndex].checked = !STORE[itemIndex].checked; 
+    STORE[itemIndex].checked = !STORE[itemIndex].checked; 
 }
 
 function handleCheckedItems() {
@@ -101,15 +101,29 @@ function handleCheckedItems() {
     //Re-render
     
     $('.js-shopping-list').on('click', '.js-item-toggle', function(event) {
-      const itemIndex = getItemIndexFromElement(event.currentTarget);
-      crossCheckedItems(itemIndex);
-      renderShoppingList();
-    })
+        const itemIndex = getItemIndexFromElement(event.currentTarget);
+        crossCheckedItems(itemIndex);
+        renderShoppingList();
+    });
     console.log('\'handleCheckedItems\' ran');
+}
+
+function deleteItemFromStore (itemIndex) {
+    STORE.splice(itemIndex, 1);
 }
 
 function handleDeletedItems() {
     // responsible for deleting items
+    //Listen for "delete" click .shopping-item-delete
+    //retrive the index of the item we want to delete from data attribute - used getItemIndexFromElement function
+    //Remove from STORE object with splice - needs new function
+    //Re-Render
+    $('.js-shopping-list').on('click', '.js-item-delete', function(event){
+        const itemIndex = getItemIndexFromElement(event.currentTarget);
+        deleteItemFromStore(itemIndex);
+        renderShoppingList();
+
+    });
     console.log('\'handleDeletedItems\' ran');
 }
 
