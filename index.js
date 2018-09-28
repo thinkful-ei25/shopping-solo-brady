@@ -26,27 +26,33 @@ const STORE = [
 ];
 
 function generateItemElement(item, itemIndex, template) {
-  return `
-    <li>${item.name}</li>`;
+    return `
+    <li class="js-item-index-element" data-item-index="${itemIndex}">
+      <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>
+      <div class="shopping-item-controls">
+        <button class="shopping-item-toggle js-item-toggle">
+            <span class="button-label">check</span>
+        </button>
+        <button class="shopping-item-delete js-item-delete">
+            <span class="button-label">delete</span>
+        </button>
+      </div>
+    </li>`;
 }
 
 
 function generateShoppingItemsString(shoppingList) {
-  // takes in argument shoppingList
-  console.log("Generating shopping list element");
-  const items = shoppingList.map((item, index) => generateItemElement(item, index));
+    // takes in argument shoppingList
+    console.log('Generating shopping list element');
+    const items = shoppingList.map((item, index) => generateItemElement(item, index));
   
-  return items.join("");
+    return items.join('');
 }
 
 function renderShoppingList() {
     console.log('\'renderShoppingList\' ran');
-    //responsible for displaying shopping list in DOM
-    // we will need to place all shopping list items in <ul class="shopping-list js-shopping-list"> 
-    // Using STORE, translate each item as a string representing <li> with:
-    // Item Name as inner text
-    //Item's index in Store set as a data attribute on the <li>
-    // item's checked status state (true or false) - this will render the presence or absence of a css class
+    // Responsible for displaying shopping list in DOM
+    // Places all shopping items in <ul class="shopping-list js-shopping-list"> 
     // Joing these together as one long string
     // insert <li> string inside of the the .js-shopping-list <ul> in the dom
     
@@ -55,12 +61,27 @@ function renderShoppingList() {
     $('.js-shopping-list').html(shoppingListItemString);
 }
 
+function addItemShoppingList(newItem) {
+  STORE.push({name: newItem, checked: false});
 
+
+}
 
 
 function handleNewItems() {
     //responsible for handling when users add new items
-    console.log('\'handleNewItems\' ran');
+    // Listen for when users submit new list item
+    // Take in name of text input form and clear item input from form
+    // Add item to STORE as a new object. Name = val() Checked: False
+    // Re-Render the list with new STORE update.
+    $('#js-shopping-list-form').submit(function(event) {
+        event.preventDefault();
+        const newItem = $('.js-shopping-list-entry').val();
+        $('.js-shopping-list-entry').val('');
+        addItemShoppingList(newItem);
+        renderShoppingList();
+    });
+    
 }
 
 function handleCheckedItems() {
