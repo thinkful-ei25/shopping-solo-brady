@@ -84,8 +84,25 @@ function handleNewItems() {
     
 }
 
+function getItemIndexFromElement(item) {
+  const itemIndexString = $(item).closest('js-item-index-element').attr('data-item-index');
+  console.log(parseInt(itemIndexString)); //check parseInt, change to return
+}
+
+function crossCheckedItems(itemIndex){
+STORE[itemIndex].checked = !STORE[itemIndex].checked; 
+}
+
 function handleCheckedItems() {
     //responsible for handling when users mark an item as checked
+    //Listen for 'check' click
+    //Retrieve item index in STORE from data attribute
+    //Toggle checked property for item at index
+    //Re-render
+    
+    $('.js-shopping-list').on('click', 'js-item-toggle', function(event) {
+      //Add function here
+    })
     console.log('\'handleCheckedItems\' ran');
 }
 
