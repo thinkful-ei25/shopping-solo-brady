@@ -85,8 +85,8 @@ function handleNewItems() {
 }
 
 function getItemIndexFromElement(item) {
-  const itemIndexString = $(item).closest('js-item-index-element').attr('data-item-index');
-  console.log(parseInt(itemIndexString)); //check parseInt, change to return
+  const itemIndexString = $(item).closest('.js-item-index-element').attr('data-item-index');
+  return parseInt(itemIndexString, 10);
 }
 
 function crossCheckedItems(itemIndex){
@@ -100,8 +100,10 @@ function handleCheckedItems() {
     //Toggle checked property for item at index
     //Re-render
     
-    $('.js-shopping-list').on('click', 'js-item-toggle', function(event) {
-      //Add function here
+    $('.js-shopping-list').on('click', '.js-item-toggle', function(event) {
+      const itemIndex = getItemIndexFromElement(event.currentTarget);
+      crossCheckedItems(itemIndex);
+      renderShoppingList();
     })
     console.log('\'handleCheckedItems\' ran');
 }
