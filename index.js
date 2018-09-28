@@ -25,6 +25,20 @@ const STORE = [
     }
 ];
 
+function generateItemElement(item, itemIndex, template) {
+  return `
+    <li>${item.name}</li>`;
+}
+
+
+function generateShoppingItemsString(shoppingList) {
+  // takes in argument shoppingList
+  console.log("Generating shopping list element");
+  const items = shoppingList.map((item, index) => generateItemElement(item, index));
+  
+  return items.join("");
+}
+
 function renderShoppingList() {
     console.log('\'renderShoppingList\' ran');
     //responsible for displaying shopping list in DOM
@@ -36,10 +50,13 @@ function renderShoppingList() {
     // Joing these together as one long string
     // insert <li> string inside of the the .js-shopping-list <ul> in the dom
     
-    const shoppingListItemString = '<li>apples</li>';
+    const shoppingListItemString = generateShoppingItemsString(STORE);
     //places shoppingListItemString into the Shopping List <ul>
     $('.js-shopping-list').html(shoppingListItemString);
 }
+
+
+
 
 function handleNewItems() {
     //responsible for handling when users add new items
