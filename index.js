@@ -28,7 +28,8 @@ const STORE = {
         }
     ],
     hide: false,
-    searchedItems: []
+    searchedItems: [],
+    searchTerm: ''   
 };
 
 //MULTI-USE FUNCTIONS
@@ -38,7 +39,7 @@ function generateItemElement(item) {
     let itemIndex = STORE.items.indexOf(item);
     return `
     <li class="js-item-index-element" data-item-index="${itemIndex}">
-      <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>
+      <span contenteditable="true" class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>
       <div class="shopping-item-controls">
         <button class="shopping-item-toggle js-item-toggle">
             <span class="button-label">check</span>
@@ -63,20 +64,9 @@ function generateShoppingItemsString(shoppingList) {
 function renderShoppingList() {    
     let filteredItems = [...STORE.items];
 
-    // if(STORE.hide) {
-    //     filteredItems = filteredItems.filter(item => !item.checked);
-    // }
-
-    // if(STORE.searchedItems) {
-    //     filteredItems = STORE.searchedItems;
-    //     if(STORE.hide) {
-    //         filteredItems = filteredItems.filter(item => !item.checked);
-    //     }
-    // }
-
-    if(STORE.searchedItems.length !== 0) {
+    if(STORE.searchTerm.length !== 0) {
         filteredItems = STORE.searchedItems;
-        console.log(`these are ${filteredItems}`);
+        console.log('these are', filteredItems);
     }
     if(STORE.hide){
         filteredItems = filteredItems.filter(item => !item.checked);
@@ -182,14 +172,13 @@ function handleDeletedItems() {
 // SEARCH FUNCTIONS
 // listen for inputs from the search box
 
-function compareSearchTerm (search) {
-    let matchedSearches = STORE.items;
-    if(search !== '') {
-        matchedSearches = matchedSearches.filter(item => item.name.includes(search));  //should return the matched searches
-        STORE.searchedItems = matchedSearches;
+function compareSearchTerm () {
+    let searchTerm = new RegExp(STORE.searchTerm, 'g');
+    if(STORE.searchTerm !== '') {
+        STORE.searchedItems = STORE.items.filter(item => item.name.match(searchTerm));  //should return the matched searches
     } else{ STORE.searchedItems = [];}
     
-    console.log(matchedSearches);
+    console.log(STORE.searchedItems);
 }
 
 function handleSearch() {
@@ -199,12 +188,22 @@ function handleSearch() {
         }
     });
 
+//Update to pass nothing, and use STORE above. 
     $('.js-shopping-list-search').on('keyup', function() {
-        const searchTerm = $(this).val().toLowerCase();
-        console.log('we ran handleSearch');
-        compareSearchTerm(searchTerm);
+        STORE.searchTerm = $(this).val().toLowerCase();
+        //const searchTerm = $(this).val().toLowerCase();
+        //console.log('we ran handleSearch');
+        compareSearchTerm();
         renderShoppingList();
 
+    });
+}
+
+
+function handleEditItem() {
+    $('.js-shopping-item').on('input', function(event) {
+        STORE.items.indexOf()
+        console.log(event.currentTarget.innerHTML);
     });
 }
 
@@ -212,8 +211,7 @@ function handleSearch() {
 
 
 
-
- // Calls all other functions to load when document ready
+// Calls all other functions to load when document ready
 function handleShoppingList() {
     // Calls all other functions to load when document ready
     renderShoppingList();
@@ -222,7 +220,7 @@ function handleShoppingList() {
     handleDeletedItems();
     handleHiddenCheckedItems();
     handleSearch();
-    handleItemEdit()
+    handleEditItem();
 }
 
 $(handleShoppingList);
