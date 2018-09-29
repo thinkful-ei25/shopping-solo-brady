@@ -199,9 +199,6 @@ function handleSearch() {
     });
 }
 
-function addItemShoppingList(newItem) {
-    STORE.items.push({name: newItem, checked: false});
-}
 
 //Listen for linput on the .js-shopping-item
 //Get the index of that item from the store
@@ -210,9 +207,8 @@ function addItemShoppingList(newItem) {
 function handleEditItem() {
     $('.js-shopping-item').on('input', function(event) {
         const itemIndex = getItemIndexFromElement(event.currentTarget); //assigning the index of the the editted item to itemIndex
-        console.log(itemIndex); //working
-        STORE.items[itemIndex][name] = event.currentTarget.innerHTML; 
-        console.log(STORE.items[itemIndex]);
+        const updatedItem = STORE.items[itemIndex];
+        updatedItem.name = event.currentTarget.innerHTML;
         renderShoppingList();
     });
 }
