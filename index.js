@@ -199,14 +199,23 @@ function handleSearch() {
     });
 }
 
-
-function handleEditItem() {
-    $('.js-shopping-item').on('input', function(event) {
-        STORE.items.indexOf()
-        console.log(event.currentTarget.innerHTML);
-    });
+function addItemShoppingList(newItem) {
+    STORE.items.push({name: newItem, checked: false});
 }
 
+//Listen for linput on the .js-shopping-item
+//Get the index of that item from the store
+//Update the name of the item to be the new text input
+//re-render
+function handleEditItem() {
+    $('.js-shopping-item').on('input', function(event) {
+        const itemIndex = getItemIndexFromElement(event.currentTarget); //assigning the index of the the editted item to itemIndex
+        console.log(itemIndex); //working
+        STORE.items[itemIndex][name] = event.currentTarget.innerHTML; 
+        console.log(STORE.items[itemIndex]);
+        renderShoppingList();
+    });
+}
 
 
 
