@@ -7,6 +7,7 @@
 
 'use strict';
 
+
 const STORE = {
     items: [  
         {
@@ -27,10 +28,14 @@ const STORE = {
         }
     ],
     hide: false,
-    searchTerm: ''
+    searchedItems: []
 };
 
-function generateItemElement(item, itemIndex) {
+//MULTI-USE FUNCTIONS
+
+//Inputs each item into necessary CSS
+function generateItemElement(item) {
+    let itemIndex = STORE.items.indexOf(item);
     return `
     <li class="js-item-index-element" data-item-index="${itemIndex}">
       <span class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>
@@ -45,42 +50,62 @@ function generateItemElement(item, itemIndex) {
     </li>`;
 }
 
-
+// Aggregrates individual items into one signular list.
 function generateShoppingItemsString(shoppingList) {
     // takes in argument shoppingList
-    const items = shoppingList.map((item, index) => generateItemElement(item, index));
-  
+    
+    const items = shoppingList.map((item, index) => generateItemElement(item, index)); //updates index
     return items.join('');
 }
 
+
+// Sends the list of items (filtered or un-filtered) to DOM
 function renderShoppingList() {    
-    // const shoppingListItemString = generateShoppingItemsString(STORE);
-    // Create a shopping list that updates based on whether hide is true or false.
+    let filteredItems = [...STORE.items];
 
-    let items = Array.from(STORE.items);
+    // if(STORE.hide) {
+    //     filteredItems = filteredItems.filter(item => !item.checked);
+    // }
 
-    if(STORE.hide === true) { items = Array.from(STORE.items).filter(item => !item.checked); }
-    
-    //call function to attaches the items to an index and then add this to the shopping list html.
-    const shoppingListItemString = generateShoppingItemsString(items); //pass the array to generateShoppingItemsString
-  
+    // if(STORE.searchedItems) {
+    //     filteredItems = STORE.searchedItems;
+    //     if(STORE.hide) {
+    //         filteredItems = filteredItems.filter(item => !item.checked);
+    //     }
+    // }
+
+    if(STORE.searchedItems.length !== 0) {
+        filteredItems = STORE.searchedItems;
+        console.log(`these are ${filteredItems}`);
+    }
+    if(STORE.hide){
+        filteredItems = filteredItems.filter(item => !item.checked);
+    }
+    const shoppingListItemString = generateShoppingItemsString(filteredItems); 
     $('.js-shopping-list').html(shoppingListItemString);
 }
 
-
-function addItemShoppingList(newItem) {
-    STORE.items.push({name: newItem, checked: false});
-
+//Returns the index of an Item in the Store
+function getItemIndexFromElement(item) {
+    const itemIndexString = $(item)
+        .closest('.js-item-index-element')
+        .attr('data-item-index');
+    return parseInt(itemIndexString, 10);
 
 }
 
+/* NEW ITEM FUNCTIONS
+    addItemShoppingList(newItem) - pushes new item to STORE
+    handleNewItems() - adds item iput to STORE
+ */
 
+//Pushes new item to STORE. Called by handleNewItems
+function addItemShoppingList(newItem) {
+    STORE.items.push({name: newItem, checked: false});
+}
+
+//Adds item from input to STORE
 function handleNewItems() {
-    //responsible for handling when users add new items
-    // Listen for when users submit new list item
-    // Take in name of text input form and clear item input from form
-    // Add item to STORE as a new object. Name = val() Checked: False
-    // Re-Render the list with new STORE update.
     $('#js-shopping-list-form').submit(function(event) {
         event.preventDefault();
         const newItem = $('.js-shopping-list-entry').val();
@@ -88,62 +113,107 @@ function handleNewItems() {
         addItemShoppingList(newItem);
         renderShoppingList();
     });
-    
 }
 
-function getItemIndexFromElement(item) {
-    const itemIndexString = $(item).closest('.js-item-index-element').attr('data-item-index');
-    return parseInt(itemIndexString, 10);
-}
+//END OF NEW ITEM FUNCTION
 
-function crossCheckedItems(itemIndex){
+/* CHECKED PROPERTY FUNCTIONS
+    toggleCheckedForListItem() - Toggles the checked property of the item in STORE
+    handleCheckedItems() - Responsible for handling when a users marks an item as checked 
+*/
+
+//Toggles the Checked property for an item
+function toggleCheckedForListItem (itemIndex){
     STORE.items[itemIndex].checked = !STORE.items[itemIndex].checked; 
 }
 
-function toggleHiddenCheckItems() {
-  STORE.hide = !STORE.hide;
-}
-function handleHiddenCheckedItems(){
-  $('#toggle-completed-items').click(function(event) {
-    toggleHiddenCheckItems(STORE.items);
-    renderShoppingList();
-  })
-}
-
+//Responsible for handling when a users marks an item as checked
 function handleCheckedItems() {
-    //responsible for handling when users mark an item as checked
-    //Listen for 'check' click
-    //Retrieve item index in STORE from data attribute
-    //Toggle checked property for item at index
-    //Re-render
-    
     $('.js-shopping-list').on('click', '.js-item-toggle', function(event) {
         const itemIndex = getItemIndexFromElement(event.currentTarget);
-        crossCheckedItems(itemIndex);
+        toggleCheckedForListItem(itemIndex);
         renderShoppingList();
     });
-    console.log('\'handleCheckedItems\' ran');
 }
 
+//END OF CHECKED PROPERTY FUNCTIONS
+
+/* HIDE CHECKED ITEM FUNCTIONS
+    toggleHiddenCheckItems() - Toggles the hide property in STORE obj
+    handleHiddenCheckedItems() - Responsbile for handling when a user clicks hide checked items
+*/
+
+// Toggles the hide property in STORE obj
+function toggleHiddenCheckItems() { 
+    STORE.hide = !STORE.hide;
+}
+
+// Responsbile for handling when a user clicks hide checked items
+function handleHiddenCheckedItems(){
+    $('#toggle-completed-items').click(function() {
+        toggleHiddenCheckItems();
+        renderShoppingList();
+    });
+}
+
+// END OF HIDE CHECKED ITEM FUNCTIONS
+
+/* DELETE ITEM FUNCTIONS
+    deleteItemFromStore() - removes the deleted item from STORE obj
+    handleDeletedItems() - Responsbile for handling when user clicks delete button
+*/
+
+//Removes the deleted item from STORE obj
 function deleteItemFromStore (itemIndex) {
     STORE.items.splice(itemIndex, 1);
 }
-
+//Responsbile for handling when user clicks delete button
 function handleDeletedItems() {
-    // responsible for deleting items
-    //Listen for "delete" click .shopping-item-delete
-    //retrive the index of the item we want to delete from data attribute - used getItemIndexFromElement function
-    //Remove from STORE object with splice - needs new function
-    //Re-Render
     $('.js-shopping-list').on('click', '.js-item-delete', function(event){
         const itemIndex = getItemIndexFromElement(event.currentTarget);
         deleteItemFromStore(itemIndex);
         renderShoppingList();
 
     });
-    console.log('\'handleDeletedItems\' ran');
+}
+// END OF DELETE ITEM FUNCTIONS
+
+
+// SEARCH FUNCTIONS
+// listen for inputs from the search box
+
+function compareSearchTerm (search) {
+    let matchedSearches = STORE.items;
+    if(search !== '') {
+        matchedSearches = matchedSearches.filter(item => item.name.includes(search));  //should return the matched searches
+        STORE.searchedItems = matchedSearches;
+    } else{ STORE.searchedItems = [];}
+    
+    console.log(matchedSearches);
 }
 
+function handleSearch() {
+    $('.js-shopping-list-search').keypress(function(event) {
+        if(event.keycode === 13) {
+            event.preventDefault();
+        }
+    });
+
+    $('.js-shopping-list-search').on('keyup', function() {
+        const searchTerm = $(this).val().toLowerCase();
+        console.log('we ran handleSearch');
+        compareSearchTerm(searchTerm);
+        renderShoppingList();
+
+    });
+}
+
+
+
+
+
+
+ // Calls all other functions to load when document ready
 function handleShoppingList() {
     // Calls all other functions to load when document ready
     renderShoppingList();
@@ -151,9 +221,8 @@ function handleShoppingList() {
     handleCheckedItems();
     handleDeletedItems();
     handleHiddenCheckedItems();
-
-
+    handleSearch();
+    handleItemEdit()
 }
 
 $(handleShoppingList);
-
