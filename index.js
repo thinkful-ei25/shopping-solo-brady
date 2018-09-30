@@ -36,10 +36,11 @@ const STORE = {
 
 //Inputs each item into necessary CSS
 function generateItemElement(item) {
+    //console.log(item);
     let itemIndex = STORE.items.indexOf(item);
     return `
-    <li class="js-item-index-element" data-item-index="${itemIndex}">
-      <span contenteditable="true" class="shopping-item js-shopping-item ${item.checked ? 'shopping-item__checked' : ''}">${item.name}</span>
+    <li class="js-item-index-element" data-item-index="${itemIndex}" data-item-name="${item.name}">
+      <span contenteditable="true" class="shopping-item ${item.checked ? 'js-shopping-item shopping-item__checked' : 'js-shopping-item'}">${item.name}</span>
       <div class="shopping-item-controls">
         <button class="shopping-item-toggle js-item-toggle">
             <span class="button-label">check</span>
@@ -63,10 +64,10 @@ function generateShoppingItemsString(shoppingList) {
 // Sends the list of items (filtered or un-filtered) to DOM
 function renderShoppingList() {    
     let filteredItems = [...STORE.items];
-
+    console.log(STORE);
     if(STORE.searchTerm.length !== 0) {
         filteredItems = STORE.searchedItems;
-        console.log('these are', filteredItems);
+        //console.log('these are', filteredItems);
     }
     if(STORE.hide){
         filteredItems = filteredItems.filter(item => !item.checked);
@@ -77,10 +78,17 @@ function renderShoppingList() {
 
 //Returns the index of an Item in the Store
 function getItemIndexFromElement(item) {
-    const itemIndexString = $(item)
+    //passes button class
+    //need to get text from 
+    let itemIndexString = $(item)
         .closest('.js-item-index-element')
-        .attr('data-item-index');
-    return parseInt(itemIndexString, 10);
+         .attr('data-item-index');
+    return itemIndexString;
+    //SAVE BELOW -- OLD Code
+    // $(item)
+    //     .closest('.js-item-index-element')
+    //     .attr('data-item-index');
+    // return parseInt(itemIndexString, 10);
 
 }
 
@@ -204,12 +212,14 @@ function handleSearch() {
 //Get the index of that item from the store
 //Update the name of the item to be the new text input
 //re-render
+
 function handleEditItem() {
-    $('.js-shopping-item').on('input', function(event) {
-        const itemIndex = getItemIndexFromElement(event.currentTarget); //assigning the index of the the editted item to itemIndex
-        const updatedItem = STORE.items[itemIndex];
+    $('.js-shopping-list').on('input', '.js-shopping-item', function(event) {
+        let itemIndex = getItemIndexFromElement(event.currentTarget); //assigning the index of the the editted item to itemIndex
+        let updatedItem = STORE.items[itemIndex];
         updatedItem.name = event.currentTarget.innerHTML;
-        renderShoppingList();
+       $(event.currentTarget).blur(renderShoppingList())
+        //renderShoppingList();
     });
 }
 
